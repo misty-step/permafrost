@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --permafrost-bg: #0a0e0f;
+  --permafrost-panel: #111a1c;
+  --permafrost-border: #1a2a2c;
+  --permafrost-amber: #ff8c00;
+  --permafrost-green: #00ff41;
+  --permafrost-red: #ff2020;
+  --permafrost-muted: #4a6a6c;
+}
+
+* {
+  box-sizing: border-box;
+  border-radius: 0 !important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--permafrost-bg);
+  color: var(--permafrost-amber);
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  min-height: 100vh;
+}
+
+/* Scanline overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+/* Glow effects */
+.glow-amber {
+  text-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+}
+
+.glow-green {
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.glow-red {
+  text-shadow: 0 0 10px rgba(255, 32, 32, 0.3);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--permafrost-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--permafrost-border);
+  border: 1px solid var(--permafrost-muted);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--permafrost-muted);
+}
+
+/* Industrial input styling */
+.industrial-input {
+  background-color: var(--permafrost-panel);
+  border: 2px solid var(--permafrost-border);
+  color: var(--permafrost-amber);
+  padding: 0.75rem 1rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.industrial-input:focus {
+  border-color: var(--permafrost-amber);
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.2);
+}
+
+.industrial-input::placeholder {
+  color: var(--permafrost-muted);
+}
+
+/* Industrial button styling */
+.industrial-btn {
+  background-color: transparent;
+  border: 2px solid var(--permafrost-amber);
+  color: var(--permafrost-amber);
+  padding: 0.5rem 1.5rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.industrial-btn:hover {
+  background-color: var(--permafrost-amber);
+  color: var(--permafrost-bg);
+}
+
+.industrial-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.industrial-btn:disabled:hover {
+  background-color: transparent;
+  color: var(--permafrost-amber);
+}
+
+/* Industrial select styling */
+.industrial-select {
+  background-color: var(--permafrost-panel);
+  border: 2px solid var(--permafrost-border);
+  color: var(--permafrost-amber);
+  padding: 0.5rem 1rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.industrial-select:focus {
+  border-color: var(--permafrost-amber);
+}
+
+/* Panel styling */
+.industrial-panel {
+  background-color: var(--permafrost-panel);
+  border: 1px solid var(--permafrost-border);
+  padding: 1.5rem;
+}
+
+/* Section numbering */
+.section-number {
+  color: var(--permafrost-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Loading animation */
+@keyframes acquiring {
+  0% { content: 'ACQUIRING DATA'; }
+  25% { content: 'ACQUIRING DATA.'; }
+  50% { content: 'ACQUIRING DATA..'; }
+  75% { content: 'ACQUIRING DATA...'; }
+}
+
+.acquiring::after {
+  content: '...';
+  animation: acquiring 1.5s steps(4) infinite;
+}
+
+/* Recharts custom styling */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--permafrost-border) !important;
+}
+
+.recharts-text {
+  fill: var(--permafrost-muted) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 0.75rem !important;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+.recharts-default-tooltip {
+  background-color: var(--permafrost-panel) !important;
+  border: 1px solid var(--permafrost-border) !important;
+}
+
+.recharts-tooltip-label {
+  color: var(--permafrost-amber) !important;
+}
+
+.recharts-tooltip-item {
+  color: var(--permafrost-amber) !important;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
