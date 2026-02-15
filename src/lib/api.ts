@@ -55,23 +55,37 @@ export async function fetchAllWeatherData(
   lat: number,
   lng: number,
   startYear: number = 1940,
-  endYear: number = new Date().getFullYear()
+  endYear: number = new Date().getFullYear(),
+  onProgress?: (loaded: number, total: number) => void
 ): Promise<WeatherData[]> {
   const allData: WeatherData[] = [];
   
-  // Fetch in chunks (yearly for recent, decade for older if needed)
-  const fetchPromises: Promise<WeatherData[]>[] = [];
-  
-  for (let year = startYear; year <= endYear; year++) {
-    const startDate = `${year}-01-01`;
-    const endDate = `${year}-12-31`;
-    fetchPromises.push(fetchWeatherData(lat, lng, startDate, endDate));
+  // Build 10-year chunks to avoid overwhelming the API
+  const chunks: { start: string; end: string }[] = [];
+  for (let year = startYear; year <= endYear; year += 10) {
+    const chunkEnd = Math.min(year + 9, endYear);
+    chunks.push({
+      start: `${year}-01-01`,
+      end: `${chunkEnd}-12-31`,
+    });
   }
   
-  const results = await Promise.all(fetchPromises);
+  // Fetch with concurrency limit of 3
+  const CONCURRENCY = 3;
+  let loaded = 0;
   
-  for (const result of results) {
-    allData.push(...result);
+  for (let i = 0; i < chunks.length; i += CONCURRENCY) {
+    const batch = chunks.slice(i, i + CONCURRENCY);
+    const results = await Promise.all(
+      batch.map(chunk => fetchWeatherData(lat, lng, chunk.start, chunk.end))
+    );
+    
+    for (const result of results) {
+      allData.push(...result);
+    }
+    
+    loaded += batch.length;
+    onProgress?.(loaded, chunks.length);
   }
   
   return allData.sort((a, b) => a.date.localeCompare(b.date));

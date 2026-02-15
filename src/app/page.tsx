@@ -27,6 +27,7 @@ function PermafrostApp() {
   const [yearlyData, setYearlyData] = useState<YearlyData[]>([]);
   const [stats, setStats] = useState<WeatherStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState<{ loaded: number; total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedDecades, setSelectedDecades] = useState<number[]>([1980, 2000, 2020]);
   const [chartMode, setChartMode] = useState<'yearly' | 'decade'>('yearly');
@@ -54,10 +55,17 @@ function PermafrostApp() {
     
     setSelectedCity(city);
     setIsLoading(true);
+    setLoadProgress(null);
     setError(null);
     
     try {
-      const data = await fetchAllWeatherData(city.latitude, city.longitude);
+      const data = await fetchAllWeatherData(
+        city.latitude,
+        city.longitude,
+        1940,
+        new Date().getFullYear(),
+        (loaded, total) => setLoadProgress({ loaded, total })
+      );
       setWeatherData(data);
     } catch (err) {
       console.error('Error fetching weather data:', err);
@@ -122,7 +130,7 @@ function PermafrostApp() {
         
         {/* Main Content Grid */}
         {isLoading ? (
-          <LoadingState />
+          <LoadingState progress={loadProgress} />
         ) : selectedCity && weatherData.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Chart */}
