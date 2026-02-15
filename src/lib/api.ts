@@ -34,21 +34,46 @@ async function fetchWeatherData(
   lat: number,
   lng: number,
   startDate: string,
-  endDate: string
+  endDate: string,
+  retries = 3
 ): Promise<WeatherData[]> {
   const url = `${ARCHIVE_API}?latitude=${lat}&longitude=${lng}&start_date=${startDate}&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
   
-  const res = await fetch(url);
-  const data = await res.json();
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const res = await fetch(url);
+      
+      if (res.status === 429) {
+        // Rate limited - wait and retry with exponential backoff
+        const waitTime = Math.pow(2, attempt) * 1000;
+        console.log(`Rate limited, waiting ${waitTime}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+      
+      if (!res.ok) {
+        console.error(`API error: ${res.status}`);
+        return [];
+      }
+      
+      const data = await res.json();
+      
+      if (!data.daily) return [];
+      
+      return data.daily.time.map((date: string, i: number) => ({
+        date,
+        temperatureMax: data.daily.temperature_2m_max[i],
+        temperatureMin: data.daily.temperature_2m_min[i],
+        precipitation: data.daily.precipitation_sum[i],
+      }));
+    } catch (err) {
+      console.error('Fetch error:', err);
+      if (attempt === retries - 1) return [];
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
   
-  if (!data.daily) return [];
-  
-  return data.daily.time.map((date: string, i: number) => ({
-    date,
-    temperatureMax: data.daily.temperature_2m_max[i],
-    temperatureMin: data.daily.temperature_2m_min[i],
-    precipitation: data.daily.precipitation_sum[i],
-  }));
+  return [];
 }
 
 export async function fetchAllWeatherData(

@@ -59,11 +59,15 @@ function PermafrostApp() {
     setError(null);
     
     try {
+      // Default to last 30 years for faster initial load
+      const endYear = new Date().getFullYear();
+      const startYear = endYear - 30;
+      
       const data = await fetchAllWeatherData(
         city.latitude,
         city.longitude,
-        1940,
-        new Date().getFullYear(),
+        startYear,
+        endYear,
         (loaded, total) => setLoadProgress({ loaded, total })
       );
       setWeatherData(data);
@@ -131,7 +135,7 @@ function PermafrostApp() {
         {/* Main Content Grid */}
         {isLoading ? (
           <LoadingState progress={loadProgress} />
-        ) : selectedCity && weatherData.length > 0 ? (
+        ) : selectedCity && weatherData.length > 0 && stats ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Chart */}
             <div className="lg:col-span-2">
@@ -155,7 +159,7 @@ function PermafrostApp() {
               SELECT A LOCATION TO BEGIN
             </p>
             <p className="text-permafrost-muted text-sm">
-              Search for a city to view historical weather data from 1940 to present
+              Search for a city to view historical weather data from the last 30 years
             </p>
           </div>
         )}
