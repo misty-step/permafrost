@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { PostHogProvider } from "@/lib/posthog/PostHogProvider";
+import { PostHogPageview } from "@/lib/posthog/PostHogPageview";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <PostHogProvider>
+          <PostHogPageview />
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   );

@@ -1,3 +1,5 @@
+import { withSentryConfig } from '@sentry/nextjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
@@ -7,4 +9,10 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: 'misty-step',
+  project: 'permafrost',
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  disableLogger: true,
+});
