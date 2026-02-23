@@ -20,6 +20,25 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Observability Config
+
+Set these variables (see `.env.example`):
+
+- `NEXT_PUBLIC_SENTRY_DSN`: Browser Sentry DSN.
+- `SENTRY_DSN`: Server/edge Sentry DSN fallback.
+- `SENTRY_AUTH_TOKEN`: Build-time token for Sentry uploads.
+- `NEXT_PUBLIC_POSTHOG_KEY`: PostHog project API key.
+
+PostHog is initialized client-side at module load so the first pageview is not dropped.
+
+## Testing
+
+Run all tests with:
+
+```bash
+npm test
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

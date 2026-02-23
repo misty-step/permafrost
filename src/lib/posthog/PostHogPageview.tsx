@@ -7,15 +7,16 @@ import posthog from 'posthog-js';
 function PostHogPageviewInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // Depend on query string value, not object identity, to avoid duplicate captures.
+  const search = searchParams.toString();
 
   useEffect(() => {
     if (pathname && posthog) {
       let url = window.origin + pathname;
-      const search = searchParams.toString();
       if (search) url += '?' + search;
       posthog.capture('$pageview', { $current_url: url });
     }
-  }, [pathname, searchParams]);
+  }, [pathname, search]);
 
   return null;
 }
