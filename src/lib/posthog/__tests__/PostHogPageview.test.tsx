@@ -39,8 +39,9 @@ describe('PostHogPageview', () => {
     await waitFor(() => {
       expect(captureMock).toHaveBeenCalledTimes(1);
     });
+    const origin = window.origin;
     expect(captureMock).toHaveBeenCalledWith('$pageview', {
-      $current_url: 'http://localhost:3000/weather?year=1957',
+      $current_url: `${origin}/weather?year=1957`,
     });
   });
 
